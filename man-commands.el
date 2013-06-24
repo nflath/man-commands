@@ -60,4 +60,6 @@
             man-page-list)))
 
 (man-commands-update-commands)
+
 (provide 'man-commands)
+;;; man-commands.el ends here
