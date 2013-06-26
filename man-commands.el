@@ -41,15 +41,39 @@
 
 (defvar man-commands-man-dir "/usr/share/man/" "Location of man files on your system")
 
+(defun man-commands-before-first (regexp string)
+  "Returns the prefix of string that occurs directly before the start of the first match of 'regexp'."
+  (let ((index (string-match regexp string)))
+    (if index
+        (substring string 0 (match-beginning 0))
+      string)))
+
+(defun man-commands-after-last (regexp string)
+  "Returns the part of the string after the last occurrence of regexp."
+  (let ((index (string-match regexp string)))
+    (if index
+        (after-last regexp (substring string (match-end 0) (length string)))
+      string)))
+
+(defun man-commands-directory-files-recursive (dir )
+  "Returns a list of files in the directory specified and all subdirectories."
+  (apply #'append
+         (mapcar
+          (lambda (file)
+            (when (not (string-match ".*\\.$" file))
+              (if (file-directory-p file)
+                  (man-commands-directory-files-recursive file)
+                (list file))))
+          (directory-files dir t))))
+
 (defun man-commands-update-commands ()
   (interactive)
   (let ((man-page-list nil))
     (mapc (lambda (dir)
-            (message dir)
             (mapcar
              (lambda (file) (add-to-list 'man-page-list
-                                         (before-first "\\." (after-last "/" file))))
-             (directory-files-recursive (concat man-commands-man-dir dir))))
+                                         (man-commands-before-first "\\." (man-commands-after-last "/" file))))
+             (man-commands-directory-files-recursive (concat man-commands-man-dir dir))))
           (remove-if-not (lambda (elt) (string-match "man" elt))
                          (directory-files man-commands-man-dir)))
     (mapcar (lambda (elt)
