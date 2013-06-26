@@ -52,7 +52,7 @@
   "Returns the part of the string after the last occurrence of regexp."
   (let ((index (string-match regexp string)))
     (if index
-        (after-last regexp (substring string (match-end 0) (length string)))
+        (man-commands-after-last regexp (substring string (match-end 0) (length string)))
       string)))
 
 (defun man-commands-directory-files-recursive (dir )
