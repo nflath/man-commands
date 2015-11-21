@@ -5,6 +5,7 @@
 ;; Author: Nathaniel Flath <nflath@gmail.com>
 ;; URL: http://github.com/nflath/man-commands
 ;; Version: 1.1
+;; Package-Requires: ((cl-lib "0.5"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -38,6 +39,8 @@
 ;; Boston, MA 02110-1301, USA.
 
 ;;; Code:
+
+(require 'cl-lib)
 
 (defvar man-commands-man-dir "/usr/share/man/" "Location of man files on your system")
 
@@ -74,8 +77,8 @@
              (lambda (file) (add-to-list 'man-page-list
                                          (man-commands-before-first "\\." (man-commands-after-last "/" file))))
              (man-commands-directory-files-recursive (concat man-commands-man-dir dir))))
-          (remove-if-not (lambda (elt) (string-match "man" elt))
-                         (directory-files man-commands-man-dir)))
+          (cl-remove-if-not (lambda (elt) (string-match "man" elt))
+                            (directory-files man-commands-man-dir)))
     (mapcar (lambda (elt)
               (eval
                `(defun ,(intern (concat "man-" elt)) ()
